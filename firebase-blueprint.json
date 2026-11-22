@@ -1,0 +1,159 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Personal budget profile and settings owned by a single authenticated user.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Firebase Auth UID of the account owner."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "maxLength": 254,
+          "description": "User email address."
+        },
+        "displayName": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "User display name."
+        },
+        "monthlyBudget": {
+          "type": "number",
+          "description": "Configured monthly budget in COP (>= 0)."
+        },
+        "hasCompletedOnboarding": {
+          "type": "boolean",
+          "description": "Whether the user has provided their initial monthly budget."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the profile was created."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the profile was last updated."
+        }
+      },
+      "required": [
+        "uid",
+        "email",
+        "displayName",
+        "monthlyBudget",
+        "hasCompletedOnboarding",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Movement": {
+      "title": "Movement",
+      "description": "A personal expense or income entry belonging to an authenticated user.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Unique identifier for the movement."
+        },
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Owner Firebase Auth UID."
+        },
+        "amount": {
+          "type": "number",
+          "description": "Amount in COP (> 0)."
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60,
+          "description": "Movement category."
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "description": "Brief description of the expense or income."
+        },
+        "date": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60,
+          "description": "Formatted display date label."
+        },
+        "isoDate": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 20,
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "description": "ISO date string YYYY-MM-DD."
+        },
+        "dayOfMonth": {
+          "type": "integer",
+          "description": "Day of the month (1-31)."
+        },
+        "icon": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40,
+          "description": "Lucide icon key."
+        },
+        "type": {
+          "type": "string",
+          "enum": ["EXPENSE", "INCOME"],
+          "description": "Movement type."
+        },
+        "paymentMethod": {
+          "type": "string",
+          "maxLength": 40,
+          "description": "Optional payment method."
+        },
+        "observations": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Optional notes or observations."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when created."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "amount",
+        "category",
+        "description",
+        "date",
+        "isoDate",
+        "dayOfMonth",
+        "icon",
+        "type",
+        "createdAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Private user budget profile document, isolated strictly to the owning user."
+    },
+    "/users/{userId}/movements/{movementId}": {
+      "schema": { "$ref": "#/entities/Movement" },
+      "description": "Subcollection of personal expenses and income movements owned by {userId}."
+    }
+  }
+}
